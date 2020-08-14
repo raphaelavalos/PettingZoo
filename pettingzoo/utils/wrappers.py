@@ -66,6 +66,8 @@ class BaseWrapper(AECEnv):
 
         return next_obs
 
+    def seed(self, seed=None):
+        return self.env.seed(seed)
 
 class AgentIterWrapper(BaseWrapper):
     def __init__(self, env):
