@@ -15,7 +15,6 @@ def env(**kwargs):
 
 
 class raw_env(AECEnv, EzPickle):
-
     metadata = {'render.modes': ['human']}
 
     def __init__(self, seed=None, *args, **kwargs):
@@ -24,7 +23,8 @@ class raw_env(AECEnv, EzPickle):
 
         self.num_agents = self.env.num_agents
         self.agents = ["walker_" + str(r) for r in range(self.num_agents)]
-        self.agent_name_mapping = dict(zip(self.agents, list(range(self.num_agents))))
+        self.agent_name_mapping = dict(
+            zip(self.agents, list(range(self.num_agents))))
         self._agent_selector = agent_selector(self.agents)
         # spaces
         self.action_spaces = dict(zip(self.agents, self.env.action_space))
@@ -64,11 +64,14 @@ class raw_env(AECEnv, EzPickle):
     def step(self, action, observe=True):
         agent = self.agent_selection
         action = np.array(action, dtype=np.float32)
-        self.env.step(action, self.agent_name_mapping[agent], self._agent_selector.is_last())
+        self.env.step(action, self.agent_name_mapping[agent],
+                      self._agent_selector.is_last())
         for r in self.rewards:
-            self.rewards[r] = self.env.get_last_rewards()[self.agent_name_mapping[r]]
+            self.rewards[r] = self.env.get_last_rewards()[
+                self.agent_name_mapping[r]]
         for d in self.dones:
-            self.dones[d] = self.env.get_last_dones()[self.agent_name_mapping[d]]
+            self.dones[d] = self.env.get_last_dones()[
+                self.agent_name_mapping[d]]
         self.agent_selection = self._agent_selector.next()
 
         if self.env.frames >= self.env.max_frames:
@@ -77,3 +80,6 @@ class raw_env(AECEnv, EzPickle):
         self.steps += 1
         if observe:
             return self.observe(self.agent_selection)
+
+    def seed(self, seed=None):
+        return self.env.seed(seed)
